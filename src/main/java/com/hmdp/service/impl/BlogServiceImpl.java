@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- *  服务实现类
+ * 博客服务实现类
+ * 提供博客发布、查询、点赞等功能
  * </p>
  *
  * @author 虎哥

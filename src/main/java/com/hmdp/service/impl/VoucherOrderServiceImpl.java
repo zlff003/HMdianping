@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 
 /**
  * <p>
- *  服务实现类
+ * 优惠券订单服务实现类
+ * 提供秒杀下单、订单查询等功能
  * </p>
  *
  * @author 虎哥
