@@ -6,8 +6,8 @@ import com.hmdp.dto.UserDTO;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -65,7 +65,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
 
     /**
      * 请求完成后执行的方法
-     * 注意：当前未实现清理ThreadLocal的逻辑，建议在LoginInterceptor中实现
+     * 清理ThreadLocal，防止内存泄漏
      *
      * @param request HTTP请求对象
      * @param response HTTP响应对象
@@ -75,7 +75,7 @@ public class RefreshTokenInterceptor implements HandlerInterceptor {
      */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-        // TODO: 建议在此处或LoginInterceptor中清理ThreadLocal，防止内存泄漏
-        // UserHolder.removeUser();
+        // 清理ThreadLocal，防止内存泄漏
+        UserHolder.removeUser();
     }
 }

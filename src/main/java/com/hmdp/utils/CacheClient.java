@@ -152,35 +152,49 @@ public class CacheClient {
         // 1. 从Redis查询商铺缓存
         String json = stringRedisTemplate.opsForValue().get(key);
 
-        // 2. 判断缓存是否存在
-        if (StrUtil.isBlank(json)) {
-            // 缓存不存在，直接返回null
+        // 2. 判断是否命中了空值
+        if (json != null && StrUtil.isBlank(json)) {
             return null;
         }
 
-        // 3. 缓存命中，将JSON反序列化为RedisData对象（包含数据和逻辑过期时间）
+        // 3. 缓存未命中，查询数据库并重建逻辑过期缓存
+        if (json == null) {
+            R r = dbFallback.apply(id);
+            if (r == null) {
+                stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL, TimeUnit.MINUTES);
+                return null;
+            }
+            this.setWithLogicalExpire(key, r, time, unit);
+            return r;
+        }
+
+        // 4. 缓存命中，将JSON反序列化为RedisData对象（包含数据和逻辑过期时间）
         RedisData redisData = JSONUtil.toBean(json, RedisData.class);
         R r = JSONUtil.toBean((JSONObject) redisData.getData(), type);
         LocalDateTime expireTime = redisData.getExpireTime();
 
-        // 4. 判断逻辑过期时间是否有效
+        // 5. 判断逻辑过期时间是否有效
         if (expireTime.isAfter(LocalDateTime.now())) {
             // 未过期，直接返回店铺信息
             return r;
         }
 
-        // 5. 已过期，需要缓存重建
-        // 5.1 获取互斥锁，防止多个线程同时重建缓存
+        // 6. 已过期，需要缓存重建
+        // 6.1 获取互斥锁，防止多个线程同时重建缓存
         String lockKey = LOCK_SHOP_KEY + id;
         boolean isLock = tryLock(lockKey);
 
-        // 5.2 判断是否成功获取锁
+        // 6.2 判断是否成功获取锁
         if (isLock) {
             // 获取锁成功，开启独立线程异步重建缓存
             CACHE_REBUILD_EXECUTOR.submit(() -> {
                 try {
                     // 查询数据库
                     R r1 = dbFallback.apply(id);
+                    if (r1 == null) {
+                        stringRedisTemplate.opsForValue().set(key, "", CACHE_NULL_TTL, TimeUnit.MINUTES);
+                        return;
+                    }
                     // 写入redis
                     this.setWithLogicalExpire(key, r1, time, unit);
                 } catch (Exception e) {
@@ -192,7 +206,7 @@ public class CacheClient {
             });
         }
 
-        // 6. 无论是否获取锁，都立即返回旧的店铺信息（保证高可用）
+        // 7. 无论是否获取锁，都立即返回旧的店铺信息（保证高可用）
         return r;
     }
 

@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find ./src/main/java -name \"*.java\" -exec basename {} \\\\;)",
+      "Bash(xargs ls:*)",
+      "Bash(unzip -l /c/Users/Lif/.m2/repository/dev/langchain4j/langchain4j/0.35.0/langchain4j-0.35.0.jar)",
+      "Bash(unzip -l /c/Users/Lif/.m2/repository/dev/langchain4j/langchain4j-core/0.35.0/langchain4j-core-0.35.0.jar)",
+      "Bash(unzip -p /c/Users/Lif/.m2/repository/dev/langchain4j/langchain4j/0.35.0/langchain4j-0.35.0.jar dev/langchain4j/service/AiServices.class)",
+      "Bash(javap -c -p /c/Users/Lif/.m2/repository/dev/langchain4j/langchain4j/0.35.0/langchain4j-0.35.0.jar)",
+      "Bash(unzip -p /c/Users/Lif/.m2/repository/dev/langchain4j/langchain4j-core/0.35.0/langchain4j-core-0.35.0.jar dev/langchain4j/model/chat/ChatLanguageModel.class)",
+      "Read(//c/Users/Lif/.m2/repository/dev/langchain4j/langchain4j-core/0.35.0/**)",
+      "Bash(javap -public dev/langchain4j/model/chat/ChatLanguageModel.class)",
+      "Bash(cd /tmp)",
+      "Bash(cp /c/Users/Lif/.m2/repository/dev/langchain4j/langchain4j-core/0.35.0/langchain4j-core-0.35.0.jar .)",
+      "Bash(unzip -o langchain4j-core-0.35.0.jar \"dev/langchain4j/model/chat/ChatLanguageModel.class\" \"dev/langchain4j/model/chat/request/ChatRequest.class\" -d lc4j)",
+      "Bash(javap -public lc4j/dev/langchain4j/model/chat/ChatLanguageModel.class)",
+      "Bash(javap -public lc4j/dev/langchain4j/model/chat/request/ChatRequest.class)",
+      "Bash(cp /c/Users/Lif/.m2/repository/dev/langchain4j/langchain4j-core/0.35.0/langchain4j-core-0.35.0.jar /tmp/lc4j2.jar)",
+      "Bash(unzip -p /tmp/lc4j2.jar dev/langchain4j/model/chat/StreamingChatLanguageModel.class)",
+      "Bash(javap -public /tmp/stm.class)",
+      "Bash(mvn compile:*)"
+    ]
+  }
+}

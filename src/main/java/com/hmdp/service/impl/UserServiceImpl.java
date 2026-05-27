@@ -3,6 +3,7 @@ package com.hmdp.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hmdp.dto.LoginFormDTO;
 import com.hmdp.dto.Result;
@@ -15,8 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -30,9 +31,6 @@ import static com.hmdp.utils.RedisConstants.*;
  * 用户服务实现类
  * 提供用户登录、验证码发送等功能，基于Redis实现会话管理
  * </p>
- *
- * @author 虎哥
- * @since 2021-12-22
  */
 @Slf4j
 @Service
@@ -131,6 +129,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         user.setNickName("user_" + RandomUtil.randomString(10));
         save(user);
         return user;
+    }
+
+    /**
+     * 用户登出功能
+     * 删除Redis中存储的用户Token信息，使用户失效
+     *
+     * @param token 用户登录凭证Token
+     * @return 操作结果
+     */
+    @Override
+    public Result logout(String token) {
+        // 1. 校验Token是否为空
+        if (StrUtil.isBlank(token)) {
+            return Result.fail("Token不能为空");
+        }
+        
+        // 2. 从Redis中删除用户Token信息
+        stringRedisTemplate.delete(LOGIN_USER_KEY + token);
+        return Result.ok();
     }
 
 

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer ;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * MVC配置类
@@ -34,7 +34,9 @@ public class MvcConfig implements WebMvcConfigurer {
                         "/upload/**",    // 文件上传（无需登录）
                         "/blog/hot",     // 热门博客（无需登录）
                         "/user/code",    // 发送验证码（无需登录）
-                        "/user/login"    // 用户登录（无需登录）
+                        "/user/login",   // 用户登录（无需登录）
+                        "/ai/**",        // AI 客服 + 知识库管理接口（无需登录）
+                        "/mcp/**"        // MCP Server 端点（外部 MCP Client 连接）
                 ).order(1);  // 执行顺序：第2个
         
         // 2. Token刷新拦截器：拦截所有请求，刷新Token有效期

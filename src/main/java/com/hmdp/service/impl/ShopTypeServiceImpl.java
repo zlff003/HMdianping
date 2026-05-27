@@ -19,9 +19,6 @@ import static com.hmdp.utils.RedisConstants.CACHE_SHOP_KEY;
  * 店铺类型服务实现类
  * 提供店铺类型查询功能，支持Redis缓存优化
  * </p>
- *
- * @author 虎哥
- * @since 2021-12-22
  */
 @Service
 public class ShopTypeServiceImpl extends ServiceImpl<ShopTypeMapper, ShopType> implements IShopTypeService {

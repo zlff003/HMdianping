@@ -1,6 +1,7 @@
 package com.hmdp.controller;
 
 
+import cn.hutool.core.bean.BeanUtil;
 import com.hmdp.dto.LoginFormDTO;
 import com.hmdp.dto.Result;
 import com.hmdp.dto.UserDTO;
@@ -12,17 +13,15 @@ import com.hmdp.utils.UserHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * <p>
  * 用户控制器
  * 提供用户相关的HTTP接口，包括登录、登出、信息查询等功能
  * </p>
- *
- * @author 虎哥
- * @since 2021-12-22
  */
 @Slf4j
 @RestController
@@ -62,12 +61,21 @@ public class UserController {
     /**
      * 用户登出功能
      *
+     * @param request HTTP请求对象，用于获取Token
      * @return 操作结果
      */
     @PostMapping("/logout")
-    public Result logout(){
-        // TODO 实现登出功能（删除Redis中的Token）
-        return Result.fail("功能未完成");
+    public Result logout(HttpServletRequest request){
+        // 1. 获取当前请求的Token（从请求头中获取）
+        String token = request.getHeader("authorization");
+        
+        // 2. 调用服务层删除Redis中的Token
+        Result result = userService.logout(token);
+        
+        // 3. 清理ThreadLocal中的用户信息，确保登出后立即生效
+        UserHolder.removeUser();
+        
+        return result;
     }
 
     /**
@@ -101,5 +109,17 @@ public class UserController {
         info.setUpdateTime(null);
         
         return Result.ok(info);
+    }
+
+    @GetMapping("/{id}")
+    public Result queryUserById(@PathVariable("id") Long userId){
+        // 查询详情
+        User user = userService.getById(userId);
+        if (user == null) {
+            return Result.ok();
+        }
+        UserDTO userDTO = BeanUtil.copyProperties(user, UserDTO.class);
+        // 返回
+        return Result.ok(userDTO);
     }
 }

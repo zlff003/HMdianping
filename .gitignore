@@ -1,0 +1,52 @@
+# Maven / Java
+/target/
+**/target/
+*.class
+
+# Build output
+/build/
+
+# Logs
+*.log
+logs/
+*.tmp
+
+# IDE
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+
+# Environment files
+.env
+.env.*
+
+# Application config - keep real configs out of VCS, provide examples instead
+src/main/resources/application.yaml
+src/main/resources/application-*.yaml
+
+# Maven wrapper and local maven repository
+.mvn/
+# local maven repo (optional; usually not inside project)
+# .m2/
+
+# Generated files
+generated-sources/
+generated-test-sources/
+
+# Others
+*.jar
+*.war
+*.ear
+
+# Optional: IntelliJ out
+/out/
